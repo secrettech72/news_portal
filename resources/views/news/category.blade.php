@@ -4,33 +4,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 col-md-6 col-lg-8">
-                    <div class="row">
+                    <div class="row" id="reviews_wrappers">
                         <!-- Single Featured Post -->
-                        @if($all_details->count() > 0)
-                            @foreach($all_details as $key=>$data)
-                        <div class="col-12 col-lg-12">
-                            <div class="single-blog-post featured-post">
-                                <div class="post-thumb">
-                                    @if(file_exists(public_path().DIRECTORY_SEPARATOR.'Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$data->news_images))
-                                    <a href="#"><img src="{{ asset('Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$data->news_images) }}" alt=""></a>
-                                        @endif
-                                </div>
-                                <div class="post-data">
-                                    <a href="{{ route('news.full_news',$data->id) }}" class="post-catagory">
-                                        {{ $data->titles }}
-                                        <h6>{{ $data->title }}  <span style="color: red">Click To Read See More Detail</span></h6>
-                                    </a>
-                                    <div class="post-meta">
-                                        <p class="post-author">By <a href="#">Christinne Williams</a></p>
-                                        <!-- Post Like & Post Comment -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                            @endforeach
-                            @else
-                            <h3 class="help-block error">Sorry No <span style="color: red">New </span>News Available For Now</h3>
-                            @endif
+                       @include('news.common.reviews')
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
@@ -57,3 +33,30 @@
         </div>
     </div>
     @endsection
+@section('js')
+    <script>
+        $(window).ready(function(){
+           $(document).on('click','.likes',function(){
+            var id = $(this).attr('attr_id');
+            var titles = $(this).attr('attr_title');
+            $.ajax({
+                method:'POST',
+                url:'{{ route('news.likes') }}',
+                data:{
+                    _token:'{{ csrf_token() }}',
+                    id:id,
+                    titles:titles,
+                },
+                success:function(response){
+                    var data = $.parseJSON(response);
+                    if(data.error){
+                        alert('something is wrong');
+                    }else{
+                        $('#reviews_wrappers').html(data.html);
+                    }
+                }
+            });
+           });
+        });
+    </script>
+@endsection

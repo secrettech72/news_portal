@@ -12,7 +12,7 @@ class UserController extends Controller
     public $base_route = 'admin.user';
     public $panel = 'User';
     public function index(Request $request){
-        $panel = 'User';
+                $panel = 'User';
         $data['rows'] = User::all();
         return view($this->base_route.'.index',compact(['data','panel']));
     }

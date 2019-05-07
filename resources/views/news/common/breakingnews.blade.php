@@ -5,16 +5,33 @@
                 <!-- Breaking News Widget -->
                 <div class="breaking-news-area d-flex align-items-center">
                     <div class="news-title">
-                        <p>{{ $all_categories[0]->title }}</p>
+                        <p>Breaking News</p>
                     </div>
                     <div id="breakingNewsTicker" class="ticker">
                         <ul>
-                            <li><a href="">Latest News Now: {{ $featured_news[0]->title }}.</a></li>
+                            @if(isset($top_news))
+                            @foreach($top_news as $key=>$bs)
+                            <li><a href="{{ route('news.full_news',$bs->id) }}">{{ $bs->title }}.</a></li>
+                            @endforeach
+                            @endif
                         </ul>
                     </div>
                 </div>
-
                 <!-- Breaking News Widget -->
+                <div class="breaking-news-area d-flex align-items-center mt-15">
+                    <div class="news-title title2">
+                        <p>International</p>
+                    </div>
+                    <div id="internationalTicker" class="ticker">
+                        <ul>
+                            @if(isset($top_news_internations))
+                            @foreach($top_news_internations as $key=>$tns)
+                            <li><a href="#">{{ $tns->title }}.</a></li>
+                            @endforeach 
+                            @endif
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <!-- Hero Add -->

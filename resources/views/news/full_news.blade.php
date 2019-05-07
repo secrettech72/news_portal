@@ -1,6 +1,10 @@
 @extends('news.common.layouts')
 @section('content')
-    <div class="featured-post-area">
+@include('news.common.breakingnews')
+    <?php
+        DB::table('news')->where('id',$full_news[0]->id)->update(['is_clicked'=>$full_news[0]->is_clicked+1]);
+        ?>
+        <div class="featured-post-area">
         <div class="container">
             <div class="row">
                 <div class="col-12 col-md-6 col-lg-8">
@@ -11,12 +15,13 @@
                                 <div class="single-blog-post featured-post">
                                     <div class="post-thumb">
                                         @if(file_exists(public_path().DIRECTORY_SEPARATOR.'Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$full_news[0]->news_images))
-                                            <a href="#"><img src="{{ asset('Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$full_news[0]->news_images) }}" alt=""></a>
+                                            <a href="{{ asset('Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$full_news[0]->news_images) }}"><img src="{{ asset('Images'.DIRECTORY_SEPARATOR.'News'.DIRECTORY_SEPARATOR.$full_news[0]->news_images) }}" alt="{{ $full_news[0]->title }}"
+                                                title="{{ $full_news[0]->title }}"></a>
                                         @endif
                                     </div>
                                     <div class="post-data">
                                         <a href="#" class="post-catagory">{{ $full_news[0]->titles }}</a>
-                                        <a href="#" class="post-title">
+                                        <a href="{{ route('news.full_news',$full_news[0]->id) }}" class="post-title">
                                             <h6>{{ $full_news[0]->title }}</h6>
                                         </a>
                                         <div class="post-meta">
@@ -43,7 +48,12 @@
                                                         </div>
                                                         <!-- Comment Meta -->
                                                         <div class="comment-meta">
-                                                            <a href="#" class="post-author">{{ isset($_cname) && $c_name !='' ? $c_name->usernames:''}}</a>
+                                                            <a href="#" class="post-author">
+                                                            <?php
+                                                            $users_name = DB::table('users')->where('id',$cs->users_id)->first();  
+                                                                ?>
+                                                                {{ $users_name->usernames }}
+                                                            </a>
                                                             <a href="#" class="post-date">{{ $cs->created_at }}</a>
                                                             <p>{{ $cs->comments }}</p>
                                                         </div>
@@ -94,12 +104,12 @@
                         @foreach($all_categories as $key=>$cats)
                             <div class="single-blog-post small-featured-post d-flex">
                                 <div class="post-thumb">{{--asset('newspaper/img/bg-img/19.jpg')--}}
-                                    <a href="#"><img src="{{ asset('Images'.DIRECTORY_SEPARATOR.'Category'.DIRECTORY_SEPARATOR.$cats->category_images) }}" alt=""></a>
+                                    <a href="{{ route('news.category',$cats->slug) }}"><img src="{{ asset('Images'.DIRECTORY_SEPARATOR.'Category'.DIRECTORY_SEPARATOR.$cats->category_images) }}" alt=""></a>
                                 </div>
                                 <div class="post-data">
                                     <a href="{{ route('news.category',$cats->slug) }}" class="post-catagory">{{ $cats->title }}</a>
                                     <div class="post-meta">
-                                        <a href="#" class="post-title">
+                                        <a href="{{ route('news.category',$cats->slug) }}" class="post-title">
                                             <h6>{{ $cats->description }}.</h6>
                                         </a>
                                     </div>

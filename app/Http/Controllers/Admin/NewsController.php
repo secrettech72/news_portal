@@ -6,6 +6,8 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Notifications\TaskEventListener;
+use App\Events\TaskEvent;
 
 class NewsController extends Controller
 {
@@ -30,7 +32,7 @@ class NewsController extends Controller
             }
             $request->file('news_images')->move($folder_path,$file_name);
         }
-        News::create([
+        $news = News::create([
             'title' => $request->title,
             'description' => $request->description,
             'news_images' => isset($file_name)?$file_name:null,
@@ -38,6 +40,9 @@ class NewsController extends Controller
             'status' => $request->status,
             'is_featured'=>1
         ]);
+
+        event(new TaskEvent($news));
+        
         $request->session()->flash('session','Success The '.$this->panel.' Has Been Added Successfully');
         return redirect()->route($this->base_route);
     }

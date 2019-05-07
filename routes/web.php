@@ -10,7 +10,12 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+use Illuminate\Support\Facades\Notification;
+use App\Events\TaskEvent;
+use App\Notifications\DatabaseNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Subscriptions;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -21,9 +26,47 @@ Route::get('admin/login',[
     'uses'=>'Auth\LoginController@showLoginForm'
 ]);
 
+Route::get('test',function(){
+    $news = App\Models\News::find(5);
+    $user = App\User::find(1);
+    Notification::send($user,new DatabaseNotification($news));
+});
+
+
+Route::post('subscription',function(Request $request){
+    $id = $request->get('email');
+    Mail::to($id)->send(new Subscriptions());
+})->name('news.subscriptions');
+
+
+Route::get('markasread',function(){
+    auth()->user()->notifications->markAsRead();
+    return redirect()->back();
+})->name('markasread');
+
+Route::get('markallasread',function(){
+    auth()->user()->notifications->markAsRead();
+    return redirect()->back();
+})->name('markallasread');
+
 Route::get('news/category/{slug}',[
     'as'=>'news.category',
     'uses'=>'News\NewsController@category'
+]);
+
+Route::post('news/search',[
+    'as'=>'news.search',
+    'uses'=>'News\NewsController@search'
+]);
+
+Route::post('news/search/result',[
+    'as'=>'news.search_result',
+    'uses'=>'News\NewsController@search_result'
+]);
+
+Route::post('news/likes',[
+    'as'=>'news.likes',
+    'uses'=>'News\NewsController@likes'
 ]);
 
 Route::get('news/register',function (){
@@ -57,14 +100,17 @@ Route::post('comments/store',[
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['prefix'=>'admin','middleware'=>'auth'],function(){
+
     Route::get('dashboard',[
         'as'=>'admin.dashboard',
         'uses'=>'Admin\DashboardController@index'
     ]);
+
     Route::get('user',[
         'as'=>'admin.user',
         'uses'=>'Admin\UserController@index'
     ]);
+
     Route::get('user/create',[
         'as'=>'admin.user.add',
         'uses'=>'Admin\UserController@create'
@@ -164,4 +210,3 @@ Route::group(['prefix'=>'admin','middleware'=>'auth'],function(){
         'uses'=>'Admin\CommentController@delete'
     ]);
 });
-
