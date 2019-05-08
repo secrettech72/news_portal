@@ -41,7 +41,7 @@ Route::get('news/full_news/{id}',[
     'uses'=>'News\NewsController@full_news'
 ]);
 
-
+Route::post('hello');
 
 Route::get('news',[
     'as'=>'news',
